@@ -1,0 +1,112 @@
+const I18N = {
+en: {
+  tagline:"Discover. Plan. Reach. Experience.", whereTitle:"Where are you?", whereSub:"We start your plan from here.",
+  useLoc:"📍 Use my location", orPick:"Or choose a starting point", nextGroup:"Next: your group",
+  whoTitle:"Who is travelling?", family:"Family", friends:"Friends", students:"Students", couple:"Couple", solo:"Solo",
+  numPeople:"Number of people", hasElders:"Elderly person in the group", hasKids:"Children in the group",
+  startAt:"Start time", hoursLbl:"Hours available", budgetLbl:"Total budget for the group",
+  useAI:"Use AI to plan (smarter, a bit slower)", back:"Back", nextPlaces:"Find nearby places",
+  nearTitle:"Places near you", nearSub:"Tap the ones you want to visit.", all:"Select all", none:"Clear",
+  selectedLbl:"selected", food:"Food", lunchLbl:"Lunch spot", dinnerLbl:"Dinner spot", addDinner:"Add dinner",
+  vegOnly:"Pure veg only", makePlan:"Make my plan", planning:"Planning with AI...",
+  stops:"stops", peopleLbl:"people", of:"of", backBy:"back by",
+  openToday:"Open today", stepFree:"Step-free", someSteps:"Some steps", lowWalk:"Low walking", modWalk:"Moderate walking",
+  leftOut:"Left out", share:"WhatsApp", change:"Change places", print:"Save / print",
+  gettingHere:"Getting here", compare:"Compare all options", mustTry:"Must try",
+  bringHome:"Take home from Belagavi", phrasesT:"Handy Kannada phrases", kmAway:"km away", free:"Free",
+  perPerson:"per person", closedToday:"Closed today", min:"min", estimate:"estimate", openApp:"Open app", rain:"Rain",
+  srcAI:"✨ Planned by Gemini AI", srcBuilt:"Built-in plan", srcFallback:"Built-in plan (AI was slow or unavailable)",
+  noStops:"No stop fits those limits. Try more hours, more budget or other places.",
+  freeTime:"Free time before this", backAt:"Back at", pickOne:"Pick at least one place.",
+  locFind:"Finding you...", locOk:"Got it. Starting from your location.",
+  locFail:"Could not get your location. Allow access or choose a starting point.",
+  locFar:"You are far from Belagavi, so we start from the bus stand.", aiPick:"Picked by AI for your group",
+  fits:"Fits inside your time. Open status checked for today.", rainTip:"Rain is likely. Carry an umbrella.",
+  autoTip:"Tip: agree the auto fare before you sit, or ask for the meter."
+},
+hi: {
+  tagline:"खोजें। प्लान करें। पहुँचें। अनुभव करें।", whereTitle:"आप कहाँ हैं?", whereSub:"हम यहीं से आपका प्लान शुरू करेंगे।",
+  useLoc:"📍 मेरी लोकेशन इस्तेमाल करें", orPick:"या शुरुआती जगह चुनें", nextGroup:"आगे: आपका ग्रुप",
+  whoTitle:"कौन घूम रहा है?", family:"परिवार", friends:"दोस्त", students:"छात्र", couple:"कपल", solo:"अकेले",
+  numPeople:"लोगों की संख्या", hasElders:"ग्रुप में बुज़ुर्ग हैं", hasKids:"ग्रुप में बच्चे हैं",
+  startAt:"शुरू करने का समय", hoursLbl:"उपलब्ध घंटे", budgetLbl:"ग्रुप का कुल बजट",
+  useAI:"AI से प्लान करें (बेहतर, थोड़ा धीमा)", back:"वापस", nextPlaces:"आस-पास की जगहें खोजें",
+  nearTitle:"आपके पास की जगहें", nearSub:"जहाँ जाना है उन पर टैप करें।", all:"सभी चुनें", none:"हटाएँ",
+  selectedLbl:"चुनी गईं", food:"खाना", lunchLbl:"दोपहर के खाने की जगह", dinnerLbl:"रात के खाने की जगह", addDinner:"डिनर जोड़ें",
+  vegOnly:"सिर्फ़ शुद्ध शाकाहारी", makePlan:"मेरा प्लान बनाएँ", planning:"AI प्लान बना रहा है...",
+  stops:"पड़ाव", peopleLbl:"लोग", of:"में से", backBy:"वापसी",
+  openToday:"आज खुला है", stepFree:"सीढ़ी-रहित", someSteps:"कुछ सीढ़ियाँ", lowWalk:"कम पैदल", modWalk:"थोड़ा पैदल",
+  leftOut:"छोड़ा गया", share:"WhatsApp", change:"जगहें बदलें", print:"सेव / प्रिंट",
+  gettingHere:"यहाँ कैसे पहुँचें", compare:"सभी विकल्प देखें", mustTry:"ज़रूर चखें",
+  bringHome:"बेलगावी से घर ले जाएँ", phrasesT:"काम के कन्नड़ वाक्य", kmAway:"किमी दूर", free:"मुफ़्त",
+  perPerson:"प्रति व्यक्ति", closedToday:"आज बंद है", min:"मिनट", estimate:"अनुमान", openApp:"ऐप खोलें", rain:"बारिश",
+  srcAI:"✨ Gemini AI से बना प्लान", srcBuilt:"बिल्ट-इन प्लान", srcFallback:"बिल्ट-इन प्लान (AI धीमा या उपलब्ध नहीं था)",
+  noStops:"इन सीमाओं में कोई जगह नहीं बैठती। ज़्यादा घंटे, बजट या दूसरी जगहें आज़माएँ।",
+  freeTime:"इससे पहले खाली समय", backAt:"वापसी:", pickOne:"कम से कम एक जगह चुनें।",
+  locFind:"आपको ढूँढ रहे हैं...", locOk:"ठीक है। आपकी लोकेशन से शुरू करेंगे।",
+  locFail:"लोकेशन नहीं मिली। अनुमति दें या शुरुआती जगह चुनें।",
+  locFar:"आप बेलगावी से दूर हैं, इसलिए बस स्टैंड से शुरू करेंगे।", aiPick:"आपके ग्रुप के लिए AI की पसंद",
+  fits:"आपके समय में फिट। आज का खुला/बंद देखा गया है।", rainTip:"बारिश की संभावना है। छाता साथ रखें।",
+  autoTip:"टिप: बैठने से पहले ऑटो का किराया तय करें या मीटर माँगें।"
+},
+kn: {
+  tagline:"ಅನ್ವೇಷಿಸಿ. ಯೋಜಿಸಿ. ತಲುಪಿ. ಅನುಭವಿಸಿ.", whereTitle:"ನೀವು ಎಲ್ಲಿದ್ದೀರಿ?", whereSub:"ಇಲ್ಲಿಂದಲೇ ನಿಮ್ಮ ಯೋಜನೆ ಶುರುವಾಗುತ್ತದೆ.",
+  useLoc:"📍 ನನ್ನ ಸ್ಥಳ ಬಳಸಿ", orPick:"ಅಥವಾ ಆರಂಭದ ಸ್ಥಳ ಆರಿಸಿ", nextGroup:"ಮುಂದೆ: ನಿಮ್ಮ ಗುಂಪು",
+  whoTitle:"ಯಾರು ಪ್ರಯಾಣಿಸುತ್ತಿದ್ದಾರೆ?", family:"ಕುಟುಂಬ", friends:"ಸ್ನೇಹಿತರು", students:"ವಿದ್ಯಾರ್ಥಿಗಳು", couple:"ಜೋಡಿ", solo:"ಒಬ್ಬರೇ",
+  numPeople:"ಜನರ ಸಂಖ್ಯೆ", hasElders:"ಗುಂಪಿನಲ್ಲಿ ಹಿರಿಯರಿದ್ದಾರೆ", hasKids:"ಗುಂಪಿನಲ್ಲಿ ಮಕ್ಕಳಿದ್ದಾರೆ",
+  startAt:"ಆರಂಭದ ಸಮಯ", hoursLbl:"ಲಭ್ಯವಿರುವ ಗಂಟೆಗಳು", budgetLbl:"ಗುಂಪಿನ ಒಟ್ಟು ಬಜೆಟ್",
+  useAI:"AI ಬಳಸಿ ಯೋಜಿಸಿ (ಚುರುಕು, ಸ್ವಲ್ಪ ನಿಧಾನ)", back:"ಹಿಂದೆ", nextPlaces:"ಹತ್ತಿರದ ಸ್ಥಳಗಳನ್ನು ಹುಡುಕಿ",
+  nearTitle:"ನಿಮ್ಮ ಹತ್ತಿರದ ಸ್ಥಳಗಳು", nearSub:"ನೋಡಬೇಕಾದ ಸ್ಥಳಗಳನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.", all:"ಎಲ್ಲವನ್ನೂ ಆರಿಸಿ", none:"ತೆರವುಗೊಳಿಸಿ",
+  selectedLbl:"ಆಯ್ಕೆಯಾಗಿವೆ", food:"ಆಹಾರ", lunchLbl:"ಮಧ್ಯಾಹ್ನದ ಊಟದ ಸ್ಥಳ", dinnerLbl:"ರಾತ್ರಿ ಊಟದ ಸ್ಥಳ", addDinner:"ರಾತ್ರಿ ಊಟ ಸೇರಿಸಿ",
+  vegOnly:"ಶುದ್ಧ ಸಸ್ಯಾಹಾರಿ ಮಾತ್ರ", makePlan:"ನನ್ನ ಯೋಜನೆ ಮಾಡಿ", planning:"AI ಯೋಜನೆ ಮಾಡುತ್ತಿದೆ...",
+  stops:"ನಿಲ್ದಾಣಗಳು", peopleLbl:"ಜನರು", of:"ರಲ್ಲಿ", backBy:"ವಾಪಸ್",
+  openToday:"ಇಂದು ತೆರೆದಿದೆ", stepFree:"ಮೆಟ್ಟಿಲಿಲ್ಲ", someSteps:"ಕೆಲವು ಮೆಟ್ಟಿಲುಗಳು", lowWalk:"ಕಡಿಮೆ ನಡಿಗೆ", modWalk:"ಸ್ವಲ್ಪ ನಡಿಗೆ",
+  leftOut:"ಬಿಟ್ಟದ್ದು", share:"WhatsApp", change:"ಸ್ಥಳಗಳನ್ನು ಬದಲಿಸಿ", print:"ಉಳಿಸಿ / ಮುದ್ರಿಸಿ",
+  gettingHere:"ಇಲ್ಲಿಗೆ ಹೇಗೆ ಹೋಗುವುದು", compare:"ಎಲ್ಲಾ ಆಯ್ಕೆಗಳನ್ನು ನೋಡಿ", mustTry:"ಖಂಡಿತ ಸವಿಯಿರಿ",
+  bringHome:"ಬೆಳಗಾವಿಯಿಂದ ಮನೆಗೆ ಒಯ್ಯಿರಿ", phrasesT:"ಉಪಯುಕ್ತ ಕನ್ನಡ ವಾಕ್ಯಗಳು", kmAway:"ಕಿ.ಮೀ ದೂರ", free:"ಉಚಿತ",
+  perPerson:"ಪ್ರತಿ ವ್ಯಕ್ತಿಗೆ", closedToday:"ಇಂದು ಮುಚ್ಚಿದೆ", min:"ನಿಮಿಷ", estimate:"ಅಂದಾಜು", openApp:"ಆ್ಯಪ್ ತೆರೆಯಿರಿ", rain:"ಮಳೆ",
+  srcAI:"✨ Gemini AI ಮಾಡಿದ ಯೋಜನೆ", srcBuilt:"ಅಂತರ್ನಿರ್ಮಿತ ಯೋಜನೆ", srcFallback:"ಅಂತರ್ನಿರ್ಮಿತ ಯೋಜನೆ (AI ನಿಧಾನ ಅಥವಾ ಲಭ್ಯವಿರಲಿಲ್ಲ)",
+  noStops:"ಈ ಮಿತಿಗಳಲ್ಲಿ ಯಾವ ಸ್ಥಳವೂ ಹೊಂದುವುದಿಲ್ಲ. ಹೆಚ್ಚು ಗಂಟೆ, ಬಜೆಟ್ ಅಥವಾ ಬೇರೆ ಸ್ಥಳಗಳನ್ನು ಪ್ರಯತ್ನಿಸಿ.",
+  freeTime:"ಇದಕ್ಕೂ ಮೊದಲು ಬಿಡುವಿನ ಸಮಯ", backAt:"ವಾಪಸ್:", pickOne:"ಕನಿಷ್ಠ ಒಂದು ಸ್ಥಳ ಆರಿಸಿ.",
+  locFind:"ನಿಮ್ಮನ್ನು ಹುಡುಕುತ್ತಿದ್ದೇವೆ...", locOk:"ಸರಿ. ನಿಮ್ಮ ಸ್ಥಳದಿಂದ ಶುರು ಮಾಡುತ್ತೇವೆ.",
+  locFail:"ಸ್ಥಳ ಸಿಗಲಿಲ್ಲ. ಅನುಮತಿ ನೀಡಿ ಅಥವಾ ಆರಂಭದ ಸ್ಥಳ ಆರಿಸಿ.",
+  locFar:"ನೀವು ಬೆಳಗಾವಿಯಿಂದ ದೂರದಲ್ಲಿದ್ದೀರಿ, ಆದ್ದರಿಂದ ಬಸ್ ನಿಲ್ದಾಣದಿಂದ ಶುರು ಮಾಡುತ್ತೇವೆ.", aiPick:"ನಿಮ್ಮ ಗುಂಪಿಗಾಗಿ AI ಆಯ್ಕೆ",
+  fits:"ನಿಮ್ಮ ಸಮಯದಲ್ಲಿ ಹೊಂದುತ್ತದೆ. ಇಂದಿನ ತೆರೆದ/ಮುಚ್ಚಿದ ಸ್ಥಿತಿ ಪರಿಶೀಲಿಸಲಾಗಿದೆ.", rainTip:"ಮಳೆ ಬರುವ ಸಾಧ್ಯತೆ ಇದೆ. ಛತ್ರಿ ತನ್ನಿ.",
+  autoTip:"ಸಲಹೆ: ಆಟೋ ಹತ್ತುವ ಮೊದಲು ಬಾಡಿಗೆ ಮಾತಾಡಿಕೊಳ್ಳಿ ಅಥವಾ ಮೀಟರ್ ಕೇಳಿ."
+},
+mr: {
+  tagline:"शोधा. नियोजन करा. पोहोचा. अनुभवा.", whereTitle:"तुम्ही कुठे आहात?", whereSub:"इथूनच तुमचा प्लॅन सुरू करू.",
+  useLoc:"📍 माझे लोकेशन वापरा", orPick:"किंवा सुरुवातीचे ठिकाण निवडा", nextGroup:"पुढे: तुमचा ग्रुप",
+  whoTitle:"कोण प्रवास करत आहे?", family:"कुटुंब", friends:"मित्र", students:"विद्यार्थी", couple:"जोडपे", solo:"एकटे",
+  numPeople:"लोकांची संख्या", hasElders:"ग्रुपमध्ये ज्येष्ठ व्यक्ती आहेत", hasKids:"ग्रुपमध्ये मुले आहेत",
+  startAt:"सुरुवातीची वेळ", hoursLbl:"उपलब्ध तास", budgetLbl:"ग्रुपचे एकूण बजेट",
+  useAI:"AI वापरून प्लॅन करा (हुशार, थोडे संथ)", back:"मागे", nextPlaces:"जवळची ठिकाणे शोधा",
+  nearTitle:"तुमच्या जवळची ठिकाणे", nearSub:"जिथे जायचे आहे त्यावर टॅप करा.", all:"सर्व निवडा", none:"काढून टाका",
+  selectedLbl:"निवडली", food:"खाद्य", lunchLbl:"दुपारच्या जेवणाची जागा", dinnerLbl:"रात्रीच्या जेवणाची जागा", addDinner:"डिनर जोडा",
+  vegOnly:"फक्त शुद्ध शाकाहारी", makePlan:"माझा प्लॅन बनवा", planning:"AI प्लॅन बनवत आहे...",
+  stops:"थांबे", peopleLbl:"लोक", of:"पैकी", backBy:"परत",
+  openToday:"आज उघडे", stepFree:"पायऱ्या नाहीत", someSteps:"काही पायऱ्या", lowWalk:"कमी चालणे", modWalk:"थोडे चालणे",
+  leftOut:"वगळले", share:"WhatsApp", change:"ठिकाणे बदला", print:"सेव्ह / प्रिंट",
+  gettingHere:"इथे कसे पोहोचाल", compare:"सर्व पर्याय पहा", mustTry:"नक्की चाखा",
+  bringHome:"बेळगावहून घरी न्या", phrasesT:"उपयोगी कन्नड वाक्ये", kmAway:"किमी अंतरावर", free:"मोफत",
+  perPerson:"प्रति व्यक्ती", closedToday:"आज बंद", min:"मिनिटे", estimate:"अंदाज", openApp:"अ‍ॅप उघडा", rain:"पाऊस",
+  srcAI:"✨ Gemini AI ने बनवलेला प्लॅन", srcBuilt:"इन-बिल्ट प्लॅन", srcFallback:"इन-बिल्ट प्लॅन (AI संथ किंवा उपलब्ध नव्हते)",
+  noStops:"या मर्यादांमध्ये एकही ठिकाण बसत नाही. जास्त तास, बजेट किंवा इतर ठिकाणे वापरून पहा.",
+  freeTime:"याआधी मोकळा वेळ", backAt:"परत:", pickOne:"किमान एक ठिकाण निवडा.",
+  locFind:"तुम्हाला शोधत आहोत...", locOk:"ठीक आहे. तुमच्या लोकेशनपासून सुरू करू.",
+  locFail:"लोकेशन मिळाले नाही. परवानगी द्या किंवा सुरुवातीचे ठिकाण निवडा.",
+  locFar:"तुम्ही बेळगावपासून दूर आहात, म्हणून बस स्थानकापासून सुरू करू.", aiPick:"तुमच्या ग्रुपसाठी AI ची निवड",
+  fits:"तुमच्या वेळेत बसते. आजची उघडी/बंद स्थिती तपासली आहे.", rainTip:"पावसाची शक्यता आहे. छत्री सोबत ठेवा.",
+  autoTip:"टीप: रिक्षात बसण्यापूर्वी भाडे ठरवा किंवा मीटर मागा."
+}
+};
+
+let LANG = "";
+try { LANG = localStorage.getItem("lang") || ""; } catch (e) {}
+
+function t(k) { return (I18N[LANG] && I18N[LANG][k]) || I18N.en[k] || k; }
+
+function applyLang() {
+  document.documentElement.lang = LANG || "en";
+  document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t(el.dataset.i18n); });
+}
