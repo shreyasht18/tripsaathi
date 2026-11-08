@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Belagavi TripSaathi</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #status { font-size: .8rem; font-weight: 600; margin: 0 0 8px; color: #4f46e5; }
+    #planBtn:disabled { opacity: .6; cursor: wait; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Belagavi TripSaathi</h1>
+    <p>Discover. Plan. Reach. Experience.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Your trip</h2>
+
+      <label>Hours available: <b id="hoursVal">6</b></label>
+      <input type="range" id="hours" min="3" max="10" value="6">
+
+      <label>Budget: ₹<b id="budgetVal">800</b></label>
+      <input type="range" id="budget" min="200" max="3000" step="100" value="800">
+
+      <label>Who is travelling?</label>
+      <select id="who">
+        <option value="elders">Elderly parent</option>
+        <option value="budget">Budget student</option>
+        <option value="kids">Family with kids</option>
+      </select>
+
+      <button id="planBtn">Plan my day</button>
+    </section>
+
+    <section id="result"></section>
+  </main>
+
+  <script src="places.js"></script>
+  <script src="planner.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
