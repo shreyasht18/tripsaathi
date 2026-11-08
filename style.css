@@ -2,23 +2,17 @@
 body {
   margin: 0; font-family: system-ui, "Noto Sans", sans-serif; color: #0f172a;
   background: linear-gradient(rgba(241,245,249,.93), rgba(241,245,249,.97)), url("images/bg.jpg") center/cover fixed, #f1f5f9;
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; /* Centers the whole app on large screens */
 }
 [hidden] { display: none !important; }
 
-/* hero: fixed width to match app and rounded bottom */
+/* hero: your photo (images/hero.jpg) over a gradient. If the photo is missing, the gradient shows. */
 .hero {
-  position: relative; color: #fff; padding: 22px 18px 60px; overflow: hidden;
+  position: relative; color: #fff; padding: 22px 18px 70px; overflow: hidden;
   background: linear-gradient(rgba(15,23,42,.45), rgba(15,23,42,.88)),
               url("images/hero.jpg") center/cover,
               linear-gradient(135deg, #1e1b4b, #4338ca 60%, #0f766e);
-  width: 100%;
-  max-width: 520px;
-  border-radius: 0 0 24px 24px;
 }
-.hero-in { width: 100%; margin: 28px auto 0; }
+.hero-in { max-width: 520px; margin: 28px auto 0; }
 .hero h1 { margin: 0; font-size: 1.9rem; letter-spacing: -.02em; }
 .hero p { margin: 4px 0 12px; color: #c7d2fe; }
 #langMini { position: absolute; top: 14px; right: 14px; padding: 8px 10px; border-radius: 12px;
@@ -30,25 +24,21 @@ body {
 .dots { display: flex; gap: 6px; }
 .dots i { width: 30px; height: 5px; border-radius: 5px; background: rgba(255,255,255,.3); }
 .dots i.on { background: #a5b4fc; }
-.skyline { position: absolute; bottom: -1px; left: 0; width: 100%; height: 46px; fill: #f1f5f9; z-index: 2; }
+.skyline { position: absolute; bottom: -1px; left: 0; width: 100%; height: 46px; fill: #f1f5f9; }
 
-/* Fixed overlapping negative margin */
-main { max-width: 520px; width: 100%; margin: -20px auto 40px; padding: 0 14px; position: relative; z-index: 10; }
+main { max-width: 520px; margin: -34px auto 40px; padding: 0 14px; position: relative; }
 .card {
-  background: rgba(255,255,255,.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,.7); border-radius: 22px; padding: 20px;
-  box-shadow: 0 12px 35px rgba(15,23,42,.08); margin-bottom: 16px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: rgba(255,255,255,.88); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.7); border-radius: 22px; padding: 18px;
+  box-shadow: 0 10px 30px rgba(15,23,42,.12); margin-bottom: 14px;
 }
 h2 { margin: 0 0 4px; font-size: 1.2rem; line-height: 1.4; }
 h2.mt { margin-top: 24px; }
 .sub { margin: 0 0 12px; color: #64748b; font-size: .9rem; }
 label { display: block; margin-top: 16px; font-weight: 600; }
-
-/* Styled Date Picker to match Selects */
-input[type=range], select, input[type=date] { width: 100%; margin-top: 8px; }
+input[type=range], select { width: 100%; margin-top: 8px; }
 input[type=range] { accent-color: #4f46e5; }
-select, input[type=date] { padding: 12px; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; font-size: 1rem; font-family: inherit; }
+select { padding: 12px; border-radius: 12px; border: 1px solid #cbd5e1; background: #fff; font-size: 1rem; }
 .check { display: flex; align-items: center; gap: 10px; font-weight: 500; }
 .check input { width: 20px; height: 20px; accent-color: #4f46e5; }
 .status { font-size: .85rem; color: #4f46e5; font-weight: 600; min-height: 1em; margin: 8px 0 0; }
