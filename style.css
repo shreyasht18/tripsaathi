@@ -1,22 +1,42 @@
 * { box-sizing: border-box; }
 body {
   margin: 0; font-family: system-ui, "Noto Sans", sans-serif; color: #0f172a;
-  background: linear-gradient(rgba(241,245,249,.93), rgba(241,245,249,.97)), url("images/bg.jpg") center/cover fixed, #f1f5f9;
+  /* CHANGED: This creates a dark, moody overlay on your background image */
+  background: linear-gradient(rgba(15,23,42,.80), rgba(15,23,42,.95)), url("images/bg.jpg") center/cover fixed, #0f172a;
+  display: flex; 
+  flex-direction: column; 
+  align-items: center;
 }
 [hidden] { display: none !important; }
 
-/* hero: your photo (images/hero.jpg) over a gradient. If the photo is missing, the gradient shows. */
+/* hero */
 .hero {
-  position: relative; color: #fff; padding: 22px 18px 70px; overflow: hidden;
+  position: relative; color: #fff; padding: 22px 18px 60px; overflow: hidden;
   background: linear-gradient(rgba(15,23,42,.45), rgba(15,23,42,.88)),
               url("images/hero.jpg") center/cover,
               linear-gradient(135deg, #1e1b4b, #4338ca 60%, #0f766e);
+  width: 100%;
+  max-width: 520px;
+  border-radius: 0 0 24px 24px;
 }
-.hero-in { max-width: 520px; margin: 28px auto 0; }
+.hero-in { width: 100%; margin: 28px auto 0; }
 .hero h1 { margin: 0; font-size: 1.9rem; letter-spacing: -.02em; }
 .hero p { margin: 4px 0 12px; color: #c7d2fe; }
-#langMini { position: absolute; top: 14px; right: 14px; padding: 8px 10px; border-radius: 12px;
-            border: 1px solid rgba(255,255,255,.4); background: rgba(15,23,42,.45); color: #fff; font-size: .9rem; }
+
+/* FIXED: Made the language dropdown small again so it doesn't overlap the title */
+#langMini { 
+  position: absolute; 
+  top: 14px; 
+  right: 14px; 
+  width: auto; 
+  margin-top: 0;
+  padding: 6px 12px; 
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.4); 
+  background: rgba(15,23,42,.6); 
+  color: #fff; 
+  font-size: .9rem; 
+}
 #langMini option { color: #000; }
 .wx { display: inline-block; font-size: .85rem; background: rgba(255,255,255,.16); padding: 5px 12px;
       border-radius: 999px; min-height: 1.6em; margin-bottom: 10px; }
