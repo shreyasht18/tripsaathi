@@ -60,7 +60,7 @@ $("locBtn").onclick = () => {
 };
 $("next1").onclick = () => show(2);
 
-// ---------- step 2: group & date ----------
+// ---------- step 2: group ----------
 const PRESET = { family: 4, friends: 4, students: 3, couple: 2, solo: 1 };
 document.querySelectorAll("#groupChips .chip").forEach(c => {
   c.onclick = () => {
@@ -75,34 +75,19 @@ $("plus").onclick  = () => { S.people = Math.min(20, S.people + 1); $("pplVal").
 $("startH").oninput = () => $("startVal").textContent = fmt(+$("startH").value * 60);
 $("hours").oninput  = () => $("hoursVal").textContent = $("hours").value;
 $("budget").oninput = () => $("budgetVal").textContent = $("budget").value;
-
-// Initialize Date Picker
-const dateInput = $("tripDate");
-if (dateInput) {
-  const todayStr = new Date().toISOString().split('T')[0];
-  dateInput.min = todayStr;
-  dateInput.value = todayStr;
-}
-
 $("back2").onclick = () => show(1);
 $("next2").onclick = () => { buildPlaceList(false); fillMeals(); show(3); };
 
 // ---------- step 3: places + food ----------
-const getSelectedDay = () => {
-  if ($("tripDate") && $("tripDate").value) {
-    return new Date($("tripDate").value).getDay();
-  }
-  return new Date().getDay();
-};
+const todayDay = () => new Date().getDay();
 
 function buildPlaceList(keep) {
-  const travelDay = getSelectedDay();
   const sorted = PLACES.map((p, i) => ({ p, i })).sort((a, b) => km(S.origin, a.p) - km(S.origin, b.p));
   if (!keep) {
-    S.picked = new Set(sorted.filter(x => !x.p.food && x.p.closedDay !== travelDay).slice(0, 3).map(x => x.p.name));
+    S.picked = new Set(sorted.filter(x => !x.p.food && x.p.closedDay !== todayDay()).slice(0, 3).map(x => x.p.name));
   }
   $("placeList").innerHTML = sorted.map(({ p, i }) => {
-    const closed = p.closedDay === travelDay;
+    const closed = p.closedDay === todayDay();
     return `<button class="place ${closed ? "off" : ""}" data-i="${i}">
       <span class="tick">✓</span>
       ${p.img ? `<img class="pimg" src="images/${p.img}" alt="" onerror="this.remove()">` : ""}
@@ -130,8 +115,7 @@ function refreshPicks() {
   $("pickStatus").textContent = S.picked.size + " " + t("selectedLbl");
 }
 $("allBtn").onclick = () => {
-  const travelDay = getSelectedDay();
-  PLACES.filter(p => p.closedDay !== travelDay).forEach(p => S.picked.add(p.name));
+  PLACES.filter(p => p.closedDay !== todayDay()).forEach(p => S.picked.add(p.name));
   refreshPicks();
 };
 $("noneBtn").onclick = () => { S.picked.clear(); refreshPicks(); };
@@ -163,8 +147,7 @@ function getOpts() {
     places: PLACES.filter(p => S.picked.has(p.name)),
     lunch: MEALS[+$("lunchSel").value] || null,
     dinner: $("addDinner").checked ? (MEALS[+$("dinnerSel").value] || null) : null,
-    group: S.group,
-    dayOfWeek: getSelectedDay() // Support for the date picker!
+    group: S.group
   };
 }
 function fareText(o) {
@@ -186,56 +169,30 @@ function legHTML(leg) {
   </div>`;
 }
 
-function getGoogleMapsRoute(stops) {
-  const coordinates = stops.map(stop => `${stop.place.lat},${stop.place.lng}`).join('/');
-  return `https://www.google.com/maps/dir/${coordinates}`;
-}
-
-// ---------- NEW GEMINI AI DIRECT CALL ----------
+// ---------- AI (10 second limit) ----------
 async function aiPlan(o) {
   const { list, skipped } = usable(o);
-  
-  // ⚠️ REPLACE THIS WITH YOUR ACTUAL API KEY
-  const API_KEY = "YOUR_NEW_API_KEY"; 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-
-  // Tell Gemini to return exactly what the app needs to build the plan
-  const prompt = `
-    You are a travel planner for Belagavi.
-    Group: ${o.people} people (${o.group}). Elders: ${o.elders}. Kids: ${o.kids}.
-    Available time: ${o.hours} hours. Budget: ₹${o.budget}.
-    Places available: ${list.map(p => p.name).join(", ")}
-    
-    Return ONLY a raw JSON object (no markdown, no backticks) with this exact format:
-    {
-      "order": ["Place Name 1", "Place Name 2"], 
-      "modes": ["auto", "uber"], 
-      "summary": "A 1-sentence summary of why you picked this route."
-    }
-  `;
-
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-  });
-
-  if (!res.ok) throw new Error("API error " + res.status);
-  const data = await res.json();
-  
-  // Clean up the response in case Gemini includes markdown blocks like ```json
-  let text = data.candidates[0].content.parts[0].text.trim();
-  if (text.startsWith("```json")) text = text.replace(/```json/g, "").replace(/```/g, "").trim();
-  if (text.startsWith("```")) text = text.replace(/```/g, "").trim();
-
-  const ai = JSON.parse(text);
-  const names = ai.order.filter(n => list.some(p => p.name === n));
-  const modes = {};
-  if (ai.modes) ai.order.forEach((n, i) => { modes[n] = ai.modes[i]; });
-  
-  const plan = assemble(list, names, modes, o, skipped);
-  if (!plan.stops.some(s => !s.isEnd && !s.place.meal)) throw new Error("AI returned no valid stops");
-  return { plan, summary: ai.summary };
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 10000);
+  try {
+    const res = await fetch("/api/plan", {
+      method: "POST", signal: ctrl.signal,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        hours: o.hours, budget: o.budget, people: o.people, group: o.group,
+        elders: o.elders, kids: o.kids, lang: LANG || "en",
+        places: list.map(p => ({ name: p.name, dur: p.dur, cost: p.cost, walk: p.walk, step: p.step, food: !!p.food }))
+      })
+    });
+    if (!res.ok) throw new Error("API error " + res.status);
+    const ai = await res.json();
+    const names = ai.order.filter(n => list.some(p => p.name === n));
+    const modes = {};
+    ai.order.forEach((n, i) => { modes[n] = ai.modes[i]; });
+    const plan = assemble(list, names, modes, o, skipped);
+    if (!plan.stops.some(s => !s.isEnd && !s.place.meal)) throw new Error("AI returned no valid stops");
+    return { plan, summary: ai.summary };
+  } finally { clearTimeout(timer); }
 }
 
 // ---------- render ----------
@@ -286,6 +243,7 @@ function renderPlan(plan, o, srcKey, note) {
   html += `</div>`;
   if (plan.skipped.length) html += `<p class="left-out"><b>${t("leftOut")}:</b> ${plan.skipped.join("; ")}</p>`;
 
+  // extras
   const tips = [t("autoTip")];
   if (S.wx && S.wx.rain >= 50) tips.unshift(t("rainTip"));
   html += `<div class="card info"><h3>💡 Tips</h3><ul>${tips.map(x => `<li>${x}</li>`).join("")}</ul></div>`;
@@ -294,26 +252,13 @@ function renderPlan(plan, o, srcKey, note) {
     PHRASES.map(x => `<li><b>${x[0]}</b> (${x[1]}): ${x[2]}</li>`).join("")}</ul></div>`;
 
   txt += `Total about Rs ${plan.spent}. Planned with Belagavi TripSaathi.`;
-  
-  // NEW SHARING & MAPS BUTTONS
   html += `<div class="actions">
-    <a class="btn alt" target="_blank" id="mapsBtn">🗺️ Open in Google Maps</a>
-    <button class="btn" id="shareBtn">📤 ${t("share")}</button>
     <button class="btn ghost" id="editBtn">${t("change")}</button>
+    <a class="btn" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(txt)}">${t("share")}</a>
     <button class="btn ghost" id="printBtn">${t("print")}</button>
   </div>`;
 
   $("result").innerHTML = html;
-  
-  // Wire up the new buttons
-  $("mapsBtn").href = getGoogleMapsRoute(plan.stops);
-  $("shareBtn").onclick = () => {
-    if (navigator.share) {
-      navigator.share({ title: 'My TripSaathi Itinerary', text: txt, url: window.location.href }).catch(e => console.log(e));
-    } else {
-      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(txt)}`, '_blank');
-    }
-  };
   $("editBtn").onclick = () => { S.last = null; show(3); };
   $("printBtn").onclick = () => window.print();
   $("result").scrollIntoView({ behavior: "smooth" });
