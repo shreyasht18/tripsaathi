@@ -1,11 +1,55 @@
 const $ = id => document.getElementById(id);
-const S = { group: "family", people: 4, picked: new Set(), origin: { ...START }, screen: 0, last: null, wx: null };
+
+// ---------- safety net: if places.js is old or cached, these keep the app working ----------
+if (typeof MEALS === "undefined") {
+  window.MEALS = [
+    { name: "Hotel Amar (Tilakwadi)", lat: 15.8330, lng: 74.5110, dur: 60, cost: 250, veg: true, meal: true, walk: 1, step: true,
+      special: "Vegetarian thali and South Indian dishes.", tip: "Gets busy at lunch." },
+    { name: "Hotel Panchamruth Pure Veg", lat: 15.8560, lng: 74.5095, dur: 60, cost: 200, veg: true, meal: true, walk: 1, step: true,
+      special: "Pure veg meals at pocket-friendly prices.", tip: "Good value for groups." },
+    { name: "Niyaaz Restaurant (Tilakwadi)", lat: 15.8345, lng: 74.5120, dur: 60, cost: 300, veg: false, meal: true, walk: 1, step: true,
+      special: "Chicken and mutton biryani and kebabs.", tip: "Portions are big, so share." }
+  ];
+}
+if (typeof TAKEHOME === "undefined") {
+  window.TAKEHOME = ["Belagavi Kunda: the city's signature milk sweet", "Gokak Karadantu: a nut and dry-fruit sweet", "Belagavi masala doodh: spiced milk"];
+}
+if (typeof PHRASES === "undefined") {
+  window.PHRASES = [["ನಮಸ್ಕಾರ", "Namaskara", "Hello"], ["ಎಷ್ಟು?", "Eshtu?", "How much?"]];
+}
+
+const S = { group: "family", people: 4, picked: new Set(), origin: { ...START }, screen: 0, last: null, wx: null, aiErr: "" };
+
+// ---------- extra words for the maps buttons ----------
+const MAPTXT = {
+  en: { directions: "Directions", viewMap: "View on map", fullRoute: "Open full route in Google Maps", preview: "Map preview" },
+  hi: { directions: "रास्ता देखें", viewMap: "मैप पर देखें", fullRoute: "पूरा रूट Google Maps में खोलें", preview: "मैप प्रीव्यू" },
+  kn: { directions: "ದಾರಿ ನೋಡಿ", viewMap: "ನಕ್ಷೆಯಲ್ಲಿ ನೋಡಿ", fullRoute: "ಪೂರ್ಣ ಮಾರ್ಗವನ್ನು Google Maps ನಲ್ಲಿ ತೆರೆಯಿರಿ", preview: "ನಕ್ಷೆ ಪೂರ್ವವೀಕ್ಷಣೆ" },
+  mr: { directions: "मार्ग पहा", viewMap: "नकाशावर पहा", fullRoute: "संपूर्ण मार्ग Google Maps मध्ये उघडा", preview: "नकाशा पूर्वावलोकन" }
+};
+const mt = k => (MAPTXT[LANG] && MAPTXT[LANG][k]) || MAPTXT.en[k];
+
+// ---------- Google Maps links (search by NAME so Google finds the real place) ----------
+const mapQ = p => p.name === "Your location"
+  ? p.lat + "," + p.lng
+  : encodeURIComponent(p.name.replace(/[()]/g, "") + ", Belagavi, Karnataka");
+const modeOf = leg => leg.key === "walk" ? "walking" : leg.key === "bus" ? "transit" : "driving";
+const dirUrl = (from, to, mode) =>
+  `https://www.google.com/maps/dir/?api=1&origin=${mapQ(from)}&destination=${mapQ(to)}&travelmode=${mode}`;
+const searchUrl = p => `https://www.google.com/maps/search/?api=1&query=${mapQ(p)}`;
+const embedUrl = p => `https://maps.google.com/maps?q=${mapQ(p)}&z=15&output=embed`;
+function routeUrl(plan, origin) {
+  const way = plan.stops.filter(s => !s.isEnd).slice(0, 9).map(s => mapQ(s.place)).join("%7C");
+  return `https://www.google.com/maps/dir/?api=1&origin=${mapQ(origin)}&destination=${mapQ(origin)}` +
+         (way ? `&waypoints=${way}` : "") + `&travelmode=driving`;
+}
 
 // ---------- screens ----------
 function show(n) {
   S.screen = n; S.last = null;
   [0, 1, 2, 3].forEach(i => $("s" + i).hidden = i !== n);
   $("dots").hidden = n === 0;
+  $("langMini").hidden = n === 0;
   [1, 2, 3].forEach(i => $("d" + i).className = i <= n ? "on" : "");
   $("result").innerHTML = "";
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -76,7 +120,12 @@ $("startH").oninput = () => $("startVal").textContent = fmt(+$("startH").value *
 $("hours").oninput  = () => $("hoursVal").textContent = $("hours").value;
 $("budget").oninput = () => $("budgetVal").textContent = $("budget").value;
 $("back2").onclick = () => show(1);
-$("next2").onclick = () => { buildPlaceList(false); fillMeals(); show(3); };
+
+// shows the real error in a popup if something breaks
+$("next2").onclick = () => {
+  try { buildPlaceList(false); fillMeals(); show(3); }
+  catch (e) { alert("Error: " + e.message); console.error(e); }
+};
 
 // ---------- step 3: places + food ----------
 const todayDay = () => new Date().getDay();
@@ -169,11 +218,11 @@ function legHTML(leg) {
   </div>`;
 }
 
-// ---------- AI (10 second limit) ----------
+// ---------- AI (only used if the hidden "useAI" box is turned on) ----------
 async function aiPlan(o) {
   const { list, skipped } = usable(o);
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 10000);
+  const timer = setTimeout(() => ctrl.abort(), 12000);
   try {
     const res = await fetch("/api/plan", {
       method: "POST", signal: ctrl.signal,
@@ -184,14 +233,18 @@ async function aiPlan(o) {
         places: list.map(p => ({ name: p.name, dur: p.dur, cost: p.cost, walk: p.walk, step: p.step, food: !!p.food }))
       })
     });
-    if (!res.ok) throw new Error("API error " + res.status);
-    const ai = await res.json();
+    let body = null;
+    try { body = await res.json(); } catch (e) {}
+    if (!res.ok) throw new Error((body && body.error) || ("HTTP " + res.status));
+    const ai = body;
     const names = ai.order.filter(n => list.some(p => p.name === n));
     const modes = {};
     ai.order.forEach((n, i) => { modes[n] = ai.modes[i]; });
     const plan = assemble(list, names, modes, o, skipped);
-    if (!plan.stops.some(s => !s.isEnd && !s.place.meal)) throw new Error("AI returned no valid stops");
+    if (!plan.stops.some(s => !s.isEnd && !s.place.meal)) throw new Error("AI picked no usable places");
     return { plan, summary: ai.summary };
+  } catch (e) {
+    throw new Error(e.name === "AbortError" ? "AI took longer than 12 seconds" : e.message);
   } finally { clearTimeout(timer); }
 }
 
@@ -201,10 +254,12 @@ function renderPlan(plan, o, srcKey, note) {
   [0, 1, 2, 3].forEach(i => $("s" + i).hidden = true);
   const sights = plan.stops.filter(s => !s.isEnd && !s.place.meal);
   const pct = Math.min(100, Math.round(plan.spent / o.budget * 100));
+  const fullUrl = routeUrl(plan, o.origin);
   let txt = `Belagavi plan for ${o.people} people\n`;
 
   let html = `
     <p class="source">${t(srcKey)}</p>
+    ${srcKey === "srcFallback" && S.aiErr ? `<p class="left-out">AI error: ${S.aiErr}</p>` : ""}
     <div class="stats">
       <div class="stat"><b>${sights.length}</b><span>${t("stops")}</span></div>
       <div class="stat"><b>${o.people}</b><span>${t("peopleLbl")}</span></div>
@@ -212,16 +267,27 @@ function renderPlan(plan, o, srcKey, note) {
       <div class="stat"><b>${fmt(plan.backBy)}</b><span>${t("backBy")}</span></div>
     </div>
     <div class="bar"><i style="width:${pct}%"></i></div>
-    <p class="summary">${note || t("fits")}</p>`;
+    <p class="summary">${note || t("fits")}</p>
+    ${sights.length ? `<a class="btn fullroute" target="_blank" rel="noopener" href="${fullUrl}">🗺 ${mt("fullRoute")}</a>` : ""}`;
 
   if (!sights.length) html += `<div class="card">${t("noStops")}</div>`;
 
   html += `<div class="timeline">`;
+  let prev = o.origin;
   plan.stops.forEach(s => {
     const p = s.place;
+    const dUrl = dirUrl(prev, p, modeOf(s.leg));
+    const maps = `<div class="maprow">
+        <a class="mbtn" href="${dUrl}" target="_blank" rel="noopener">🧭 ${mt("directions")}</a>
+        ${s.isEnd ? "" : `<a class="mbtn" href="${searchUrl(p)}" target="_blank" rel="noopener">📍 ${mt("viewMap")}</a>`}
+      </div>`;
+    const preview = s.isEnd ? "" : `<details class="mapd"><summary>🗺 ${mt("preview")}</summary>
+        <iframe data-src="${embedUrl(p)}" title="${p.name}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+          style="width:100%;height:220px;border:0;border-radius:12px;margin-top:8px"></iframe></details>`;
+
     if (s.isEnd) {
       html += `<div class="stop"><div class="time">${fmt(s.time)}</div>
-        <h3>${t("backAt")} ${p.name}</h3>${legHTML(s.leg)}</div>`;
+        <h3>${t("backAt")} ${p.name}</h3>${legHTML(s.leg)}${maps}</div>`;
       txt += `${fmt(s.time)} ${t("backAt")} ${p.name}\n`;
       return;
     }
@@ -230,20 +296,22 @@ function renderPlan(plan, o, srcKey, note) {
       ${s.wait ? `<span class="badge">${t("freeTime")}</span>` : ""}
       ${p.img ? `<img class="banner" src="images/${p.img}" alt="" onerror="this.remove()">` : ""}
       <h3>${p.meal ? "🍽 " : p.food ? "🍴 " : ""}${p.name}</h3>
-      <div class="meta">${p.dur} ${t("min")} · ${p.cost ? "₹" + p.cost + " " + (p.meal || p.food ? t("perPerson") : t("perPerson")) : t("free")}</div>
+      <div class="meta">${p.dur} ${t("min")} · ${p.cost ? "₹" + p.cost + " " + t("perPerson") : t("free")}</div>
       ${p.meal ? `<span class="badge food">${p.veg ? "🥬 Veg" : "🍗 Non-veg"}</span>` : `<span class="badge good">${t("openToday")}</span>`}
       <span class="badge ${p.step ? "good" : "warn"}">${p.step ? t("stepFree") : t("someSteps")}</span>
       ${p.meal ? "" : `<span class="badge">${p.walk > 1 ? t("modWalk") : t("lowWalk")}</span>`}
       ${p.special ? `<div class="special"><b>${t("mustTry")}:</b> ${p.special}</div>` : ""}
       ${p.tip ? `<div class="tip">${p.tip}</div>` : ""}
       ${legHTML(s.leg)}
+      ${maps}
+      ${preview}
     </div>`;
     txt += `${fmt(s.time)} ${p.name} (${nameOf(s.leg)}, ${s.leg.min} min)\n`;
+    prev = p;
   });
   html += `</div>`;
   if (plan.skipped.length) html += `<p class="left-out"><b>${t("leftOut")}:</b> ${plan.skipped.join("; ")}</p>`;
 
-  // extras
   const tips = [t("autoTip")];
   if (S.wx && S.wx.rain >= 50) tips.unshift(t("rainTip"));
   html += `<div class="card info"><h3>💡 Tips</h3><ul>${tips.map(x => `<li>${x}</li>`).join("")}</ul></div>`;
@@ -251,7 +319,7 @@ function renderPlan(plan, o, srcKey, note) {
   html += `<div class="card info"><h3>🗣 ${t("phrasesT")}</h3><ul>${
     PHRASES.map(x => `<li><b>${x[0]}</b> (${x[1]}): ${x[2]}</li>`).join("")}</ul></div>`;
 
-  txt += `Total about Rs ${plan.spent}. Planned with Belagavi TripSaathi.`;
+  txt += `Total about Rs ${plan.spent}.\nRoute: ${fullUrl}\nPlanned with Belagavi TripSaathi.`;
   html += `<div class="actions">
     <button class="btn ghost" id="editBtn">${t("change")}</button>
     <a class="btn" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(txt)}">${t("share")}</a>
@@ -259,6 +327,13 @@ function renderPlan(plan, o, srcKey, note) {
   </div>`;
 
   $("result").innerHTML = html;
+  // load each map only when its panel is opened
+  document.querySelectorAll("details.mapd").forEach(d => {
+    d.ontoggle = () => {
+      const f = d.querySelector("iframe");
+      if (d.open && !f.getAttribute("src")) f.src = f.dataset.src;
+    };
+  });
   $("editBtn").onclick = () => { S.last = null; show(3); };
   $("printBtn").onclick = () => window.print();
   $("result").scrollIntoView({ behavior: "smooth" });
@@ -268,7 +343,7 @@ function renderPlan(plan, o, srcKey, note) {
 $("planBtn").onclick = async () => {
   if (S.picked.size === 0) { $("pickStatus").textContent = t("pickOne"); return; }
   const btn = $("planBtn"), o = getOpts();
-  btn.disabled = true;
+  btn.disabled = true; S.aiErr = "";
   try {
     let done = false;
     if ($("useAI").checked) {
@@ -277,11 +352,15 @@ $("planBtn").onclick = async () => {
         const { plan, summary } = await aiPlan(o);
         renderPlan(plan, o, "srcAI", summary);
         done = true;
-      } catch (e) { console.warn("AI failed, using the built-in planner:", e.message); }
+      } catch (e) {
+        S.aiErr = e.message;
+        console.warn("AI failed, using the built-in planner:", e.message);
+      }
     }
     if (!done) renderPlan(makePlan(o), o, $("useAI").checked ? "srcFallback" : "srcBuilt", null);
   } catch (e) {
     $("pickStatus").textContent = "Error: " + e.message;
+    alert("Error: " + e.message);
     console.error(e);
   } finally {
     btn.disabled = false; btn.textContent = t("makePlan");
