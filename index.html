@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Belagavi TripFit</title>
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
   <header class="hero">
@@ -67,7 +67,7 @@
       </div>
 
       <label class="check"><input type="checkbox" id="elders"> <span data-i18n="hasElders"></span></label>
-      <label class="check"><input type="checkbox" id="wheel"> <span data-i18n="wheel">Wheelchair user in the group</span></label>
+      <label class="check"><input type="checkbox" id="wheel"> <span data-i18n="wheel">♿ Wheelchair user in the group</span></label>
       <label class="check"><input type="checkbox" id="kids"> <span data-i18n="hasKids"></span></label>
 
       <label><span data-i18n="startAt"></span>: <b id="startVal">9:00 AM</b></label>
@@ -79,7 +79,7 @@
       <label><span data-i18n="budgetLbl"></span>: ₹<b id="budgetVal">1500</b></label>
       <input type="range" id="budget" min="200" max="10000" step="100" value="1500">
 
-      <!-- AI is switched off (hidden and unticked) -->
+      <!-- AI is switched off (hidden and unticked). To bring it back, remove "hidden" and add "checked". -->
       <input type="checkbox" id="useAI" hidden>
 
       <div class="row2">
@@ -118,10 +118,15 @@
     <section id="result"></section>
   </main>
 
-  <script src="i18n.js?v=4"></script>
-  <script src="places.js?v=4"></script>
-  <script src="planner.js?v=4"></script>
-  <script src="facilities.js?v=2"></script>
-  <script src="app.js?v=4"></script>
+  <footer style="max-width:520px;margin:0 auto;padding:0 14px 30px;font-size:.78rem;color:#64748b;text-align:center">
+    Prototype: places, opening hours, fares, accessibility and facility details are sample data being verified.
+    Uber and Rapido prices are estimates.
+  </footer>
+
+  <script src="i18n.js?v=6"></script>
+  <script src="places.js?v=6"></script>
+  <script src="planner.js?v=6"></script>
+  <script src="facilities.js?v=6"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>
