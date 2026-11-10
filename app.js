@@ -319,7 +319,7 @@ function renderPlan(plan, o, srcKey, note) {
   html += `<div class="card info"><h3>🗣 ${t("phrasesT")}</h3><ul>${
     PHRASES.map(x => `<li><b>${x[0]}</b> (${x[1]}): ${x[2]}</li>`).join("")}</ul></div>`;
 
-  txt += `Total about Rs ${plan.spent}.\nRoute: ${fullUrl}\nPlanned with Belagavi TripSaathi.`;
+  txt += `Total about Rs ${plan.spent}.\nRoute: ${fullUrl}\nPlanned with Belagavi TripFit.`;
   html += `<div class="actions">
     <button class="btn ghost" id="editBtn">${t("change")}</button>
     <a class="btn" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(txt)}">${t("share")}</a>
