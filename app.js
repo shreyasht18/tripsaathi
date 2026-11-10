@@ -253,6 +253,15 @@ function renderPlan(plan, o, srcKey, note) {
   S.last = { plan, o, srcKey, note };
   [0, 1, 2, 3].forEach(i => $("s" + i).hidden = true);
   const sights = plan.stops.filter(s => !s.isEnd && !s.place.meal);
+    // nothing fits: show a clear message instead of an empty plan
+  if (!sights.length) {
+    $("result").innerHTML = `<div class="card"><h2>${t("noStops")}</h2>
+      ${plan.skipped.length ? `<p class="left-out"><b>${t("leftOut")}:</b><br>${plan.skipped.join("<br>")}</p>` : ""}
+      <button class="btn" id="editBtn">${t("change")}</button></div>`;
+    $("editBtn").onclick = () => { S.last = null; show(2); };
+    $("result").scrollIntoView({ behavior: "smooth" });
+    return;
+  }
   const pct = Math.min(100, Math.round(plan.spent / o.budget * 100));
   const fullUrl = routeUrl(plan, o.origin);
   let txt = `Belagavi plan for ${o.people} people\n`;
