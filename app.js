@@ -4,11 +4,9 @@ const $ = id => document.getElementById(id);
 if (typeof MEALS === "undefined") {
   window.MEALS = [
     { name: "Hotel Amar (Tilakwadi)", lat: 15.8330, lng: 74.5110, dur: 60, cost: 250, veg: true, meal: true, walk: 1, step: true,
-      special: "Vegetarian thali and South Indian dishes.", tip: "Gets busy at lunch." },
+      special: "Vegetarian thali and South Indian dishes.", tip: "Prices are approximate." },
     { name: "Hotel Panchamruth Pure Veg", lat: 15.8560, lng: 74.5095, dur: 60, cost: 200, veg: true, meal: true, walk: 1, step: true,
-      special: "Pure veg meals at pocket-friendly prices.", tip: "Good value for groups." },
-    { name: "Niyaaz Restaurant (Tilakwadi)", lat: 15.8345, lng: 74.5120, dur: 60, cost: 300, veg: false, meal: true, walk: 1, step: true,
-      special: "Chicken and mutton biryani and kebabs.", tip: "Portions are big, so share." }
+      special: "Pure veg meals at pocket-friendly prices.", tip: "Prices are approximate." }
   ];
 }
 if (typeof TAKEHOME === "undefined") {
@@ -253,7 +251,8 @@ function renderPlan(plan, o, srcKey, note) {
   S.last = { plan, o, srcKey, note };
   [0, 1, 2, 3].forEach(i => $("s" + i).hidden = true);
   const sights = plan.stops.filter(s => !s.isEnd && !s.place.meal);
-    // nothing fits: show a clear message instead of an empty plan
+
+  // nothing fits: show a clear message instead of an empty plan
   if (!sights.length) {
     $("result").innerHTML = `<div class="card"><h2>${t("noStops")}</h2>
       ${plan.skipped.length ? `<p class="left-out"><b>${t("leftOut")}:</b><br>${plan.skipped.join("<br>")}</p>` : ""}
@@ -262,6 +261,7 @@ function renderPlan(plan, o, srcKey, note) {
     $("result").scrollIntoView({ behavior: "smooth" });
     return;
   }
+
   const pct = Math.min(100, Math.round(plan.spent / o.budget * 100));
   const fullUrl = routeUrl(plan, o.origin);
   let txt = `Belagavi plan for ${o.people} people\n`;
@@ -277,9 +277,7 @@ function renderPlan(plan, o, srcKey, note) {
     </div>
     <div class="bar"><i style="width:${pct}%"></i></div>
     <p class="summary">${note || t("fits")}</p>
-    ${sights.length ? `<a class="btn fullroute" target="_blank" rel="noopener" href="${fullUrl}">🗺 ${mt("fullRoute")}</a>` : ""}`;
-
-  if (!sights.length) html += `<div class="card">${t("noStops")}</div>`;
+    <a class="btn fullroute" target="_blank" rel="noopener" href="${fullUrl}">🗺 ${mt("fullRoute")}</a>`;
 
   html += `<div class="timeline">`;
   let prev = o.origin;
@@ -319,7 +317,7 @@ function renderPlan(plan, o, srcKey, note) {
     prev = p;
   });
   html += `</div>`;
-  if (plan.skipped.length) html += `<p class="left-out"><b>${t("leftOut")}:</b> ${plan.skipped.join("; ")}</p>`;
+  if (plan.skipped.length) html += `<p class="left-out"><b>${t("leftOut")}:</b><br>${plan.skipped.join("<br>")}</p>`;
 
   const tips = [t("autoTip")];
   if (S.wx && S.wx.rain >= 50) tips.unshift(t("rainTip"));
